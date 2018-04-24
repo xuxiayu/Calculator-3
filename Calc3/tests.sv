@@ -1,0 +1,145 @@
+`include "port_sequencer.sv"
+class base_test extends uvm_test;
+   bit onPort[4];
+  // bit onP1;
+  // bit onP2;
+  // bit onP3;
+   bit [0:3] sub_seq[$];
+      
+   
+   `uvm_component_utils(base_test)
+     top_env env;
+   function new(string name,uvm_component parent);
+      super.new(name,parent);
+   endfunction // new
+
+   function void turn_on_ports(bit p0,bit p1,bit p2,bit p3);
+      if(p0 == 1)
+	onPort[0]=1;
+      else
+	onPort[0]=0;
+
+      if(p1 == 1)
+	onPort[1]=1;
+      else
+	onPort[1] =0;
+
+      if(p2 == 1)
+	onPort[2]=1;
+      else
+	onPort[2] =0;
+
+      if(p3 == 1)
+	onPort[3]=1;
+      else
+	onPort[3] =0;
+   endfunction // turn_on_ports
+
+   function void build_phase(uvm_phase phase);
+      env = top_env::type_id::create("env",this);
+   endfunction // build_phase
+
+   virtual task run_phase(uvm_phase phase);
+     base_sequence seq;
+      seq = base_sequence::type_id::create("seq");
+      seq.num_items = 25;
+      if(!seq.randomize())
+	`uvm_error(get_type_name(),"Sequenc randomize failed");
+      seq.starting_phase = phase;
+      seq.start(env.agnts[0].seqcr);
+   endtask // run_phase
+endclass // base_test
+
+class add_test extends base_test; 
+   
+   `uvm_component_utils(add_test)
+     function new(string name,uvm_component parent);
+	super.new(name,parent);
+	turn_on_ports(1,0,0,0);
+	sub_seq = {`STORE,`STORE,`ADD,`FETCH};
+     endfunction // new
+   
+   
+   virtual task run_phase(uvm_phase phase);     
+      add_sequence seq[4];
+      foreach(seq[i])begin
+	 seq[i] = add_sequence::type_id::create($sformatf("seq%0d",i),this);
+      end
+      fork 
+	 begin
+	    for(int index=0;index<4;index++)begin
+	       fork
+		  automatic int idx = index;
+		  begin
+		     if(onPort[idx] == 1)begin
+			repeat(25) begin
+	      
+			   foreach(sub_seq[i])begin
+			      seq[idx].num_items = 1;
+			      if(!seq[idx].randomize() with {seq[idx].cmd==sub_seq[i];
+							   seq[idx].dreg1==1;
+							   seq[idx].dreg2==2;
+							   seq[idx].rreg1==3;
+							   seq[idx].dat_in==1;
+							   })
+				`uvm_error(get_type_name(),"Sequenc randomize failed");
+                              seq[idx].starting_phase = phase;
+                              seq[idx].start(env.agnts[idx].seqcr);
+                           end
+			
+			end
+		     end
+                  end
+	       join_none;
+	    end // for (int index=0;index<4;index++)
+	    wait fork;
+	    end // fork begin
+      join
+	    
+
+
+/*	 
+	 begin
+	    if(onP1 == 1)begin
+	       repeat(25) begin
+		  foreach(sub_seq[i])begin
+		     seq[1].num_items = 1;
+		     if(!seq[1].randomize() with {seq[1].cmd inside{[1:2]};})
+		       `uvm_error(get_type_name(),"Sequenc randomize failed");
+                     seq[1].starting_phase = phase;
+                     seq[1].start(env.agnts[1].seqcr);
+                  end
+	       end
+	    end
+	 end // fork branch
+	 begin
+	    if(onP2 == 1)begin
+	       repeat(25) begin
+		  foreach(sub_seq[i])begin
+		     seq[2].num_items = 1;
+		     if(!seq[2].randomize() with {seq[2].cmd inside{[1:2]};})
+		       `uvm_error(get_type_name(),"Sequenc randomize failed");
+                     seq[2].starting_phase = phase;
+                     seq[2].start(env.agnts[2].seqcr);
+                  end
+	       end
+	    end // if (onP2 == 1)
+	 end // fork branch
+	 begin
+	    if(onP3 == 1)begin
+	       repeat(25) begin
+		  foreach(sub_seq[i])begin
+		     seq[3].num_items = 1;
+		     if(!seq[3].randomize() with {seq[3].cmd inside{[1:2]};})
+		       `uvm_error(get_type_name(),"Sequenc randomize failed");
+                     seq[3].starting_phase = phase;
+                     seq[3].start(env.agnts[3].seqcr);
+                  end
+	       end
+	    end
+	 end
+
+      join 
+  */
+   endtask // run_phase 
+endclass // base_test

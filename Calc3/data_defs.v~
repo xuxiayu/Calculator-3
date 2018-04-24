@@ -5,7 +5,7 @@
 `define RESP_WIDTH 2
 `define TAG_WIDTH 2
 `define REGISTER_WIDTH 4
-
+`define DELAY_WIDTH 4
 //ARITHMETIC CMDS
 `define NO_OP  4'b0000
 `define ADD 4'b0001

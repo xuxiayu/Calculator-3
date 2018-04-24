@@ -8,7 +8,7 @@ class reset_driver extends uvm_driver;
 
    function void build_phase(uvm_phase phase);
       super.build_phase(phase);
-      if(~uvm_config_db #(ivrtual misc_if)::get(this,"","misc_if",misc_intf))
+      if(~uvm_config_db #(virtual misc_if)::get(this,"","misc_if",misc_intf))
 	`uvm_error(get_type_name(),"uvm_config_db::get misc_intf failed");
    endfunction // build_phase
 

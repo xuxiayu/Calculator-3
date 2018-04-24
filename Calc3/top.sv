@@ -15,48 +15,44 @@ module top;
    port_if p2_if();
    port_if p3_if();
 
-   calc3_top duv(.reset(m_if.reset),
+   calc3_top  duv(.reset(m_if.reset),
 		 .clk(m_if.clock),
-		 
-		 .req0_tag_in(p0_if.tag_in),
-		 .req0_cmd_in(p0_if.op),
+		 .req0_tag(p0_if.tag_in),
+		 .req0_cmd(p0_if.op),
 		 .req0_d1(p0_if.d1),
 		 .req0_d2(p0_if.d2),
 		 .req0_r1(p0_if.r1),
-		 .req0_data_in(p0_if.data_in),
-		 .out_resp0(p0_if.resp),
-		 .out_data0(p0_if.data_out),
-		 .out_tag0(p0_if.tag_out),
-
-		 .req1_tag_in(p1_if.tag_in),
-		 .req1_cmd_in(p1_if.op),
+		 .req0_data(p0_if.data_in),
+		 .out0_resp(p0_if.resp),
+		 .out0_data(p0_if.data_out),
+		 .out0_tag(p0_if.tag_out),
+		 .req1_tag(p1_if.tag_in),
+		 .req1_cmd(p1_if.op),
 		 .req1_d1(p1_if.d1),
 		 .req1_d2(p1_if.d2),
 		 .req1_r1(p1_if.r1),
-		 .req1_data_in(p1_if.data_in),
-		 .out_resp1(p1_if.resp),
-		 .out_data1(p1_if.data_out),
-		 .out_tag1(p1_if.tag_out),
-
-		 .req2_tag_in(p2_if.tag_in),
-		 .req2_cmd_in(p2_if.op),
+		 .req1_data(p1_if.data_in),
+		 .out1_resp(p1_if.resp),
+		 .out1_data(p1_if.data_out),
+		 .out1_tag(p1_if.tag_out),
+		 .req2_tag(p2_if.tag_in),
+		 .req2_cmd(p2_if.op),
 		 .req2_d1(p2_if.d1),
 		 .req2_d2(p2_if.d2),
 		 .req2_r1(p2_if.r1),
-		 .req2_data_in(p2_if.data_in),
-		 .out_resp2(p2_if.resp),
-		 .out_data2(p2_if.data_out),
-		 .out_tag2(p2_if.tag_out),
-
-		 .req3_tag_in(p3_if.tag_in),
-		 .req3_cmd_in(p3_if.op),
+		 .req2_data(p2_if.data_in),
+		 .out2_resp(p2_if.resp),
+		 .out2_data(p2_if.data_out),
+		 .out2_tag(p2_if.tag_out),
+		 .req3_tag(p3_if.tag_in),
+		 .req3_cmd(p3_if.op),
 		 .req3_d1(p3_if.d1),
 		 .req3_d2(p3_if.d2),
 		 .req3_r1(p3_if.r1),
-		 .req3_data_in(p3_if.data_in),
-		 .out_resp3(p3_if.resp),
-		 .out_data3(p3_if.data_out),
-		 .out_tag3(p3_if.tag_out)
+		 .req3_data(p3_if.data_in),
+		 .out3_resp(p3_if.resp),
+		 .out3_data(p3_if.data_out),
+		 .out3_tag(p3_if.tag_out)
 		 );
    initial
      begin
@@ -73,12 +69,12 @@ module top;
    initial
      begin
 	uvm_config_db #(virtual misc_if)::set(null,"*","misc_if",m_if);
-	uvm_config_db #(virtual misc_if)::set(null,"*","p0",p0_if);
-	uvm_config_db #(virtual misc_if)::set(null,"*","p1",p1_if);
-	uvm_config_db #(virtual misc_if)::set(null,"*","p2",p2_if);
-	uvm_config_db #(virtual misc_if)::set(null,"*","p3",p3_if);
+	uvm_config_db #(virtual port_if)::set(null,"*","p0",p0_if);
+	uvm_config_db #(virtual port_if)::set(null,"*","p1",p1_if);
+	uvm_config_db #(virtual port_if)::set(null,"*","p2",p2_if);
+	uvm_config_db #(virtual port_if)::set(null,"*","p3",p3_if);
 
-	uvm_top.finish_on_competion = 1;
+	uvm_top.finish_on_completion = 1;
 
 	set_global_timeout(10000ns);
 

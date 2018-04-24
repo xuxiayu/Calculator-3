@@ -26,7 +26,7 @@ class mon_trans extends uvm_sequence_item;
      `uvm_field_int(resp_came, UVM_ALL_ON)
    `uvm_object_utils_end
 
-     function new(string name="");
+     function new(string name);
 	super.new(name);
      endfunction
    

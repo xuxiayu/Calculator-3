@@ -4,16 +4,16 @@
 `include "scoreboard.sv"
 
 class top_env extends uvm_env;
-   `uvm_component_utlis(top_env)
+   `uvm_component_utils(top_env)
      reset_driver rst_drv;
    port_agent agnts[4];
-
+   
    calc_sb scb;
-
+   
    function new(string name,uvm_component parent);
       super.new(name,parent);
    endfunction // new
-
+   
    function void build_phase(uvm_phase phase);
       rst_drv = reset_driver::type_id::create("rst_drv",this);
       foreach(agnts[i]) begin

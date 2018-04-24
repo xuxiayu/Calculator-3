@@ -14,6 +14,14 @@
 //SHIFT CMDS
 `define SHL 4'b0101
 `define SHR 4'b0110
+
+//store fech cmds
+`define STORE 4'b1001
+`define FETCH 4'b1010
+//branch cmds
+`define BZERO 4'b1100
+`define BEQUAL 4'b1101
+
 `define SUCC 2'b01
 `define UNDR_OVRFL 2'b10
 `define INTERNAL_ERR 2'b11
