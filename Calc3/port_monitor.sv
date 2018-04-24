@@ -23,54 +23,82 @@ class port_monitor extends uvm_monitor;
       port_id = cg.port_id;
    endfunction // cfg_monitor
    
-   function mon_trans write_input(mon_trans obj);
-      obj.op = port_intf.op;
-      obj.d1 = port_intf.d1;
-      obj.d2 = port_intf.d2;
-      obj.r1 = port_intf.r1;
-      obj.data_in = port_intf.data_in;
-      obj.tag_in = tag_in;
-      obj.cmd_nResp = 1;
-      obj.port_id = port_id;
-      return obj;     
-   endfunction // write_input
-   
-   function mon_trans write_output(mon_trans obj);   
-      obj.resp = port_intf.resp;
-      obj.tag_out = tag_out;
-      obj.data_out = port_intf.data_out;
-      return obj;
-   endfunction; // write_output
-   
    virtual task run_phase(uvm_phase phase);
-      mon_trans data[4];
-      foreach(data[i])begin
-	 data[i] = mon_trans::type_id::create($sformatf("data%0d",i),this);
-      end
+      mon_trans req;
+      req.port_id = port_id;
+  //     req[0] = monitor_trans::type_id::create("req", this);
+      // req[1] = monitor_trans::type_id::create("req", this);
+      // req[2] = monitor_trans::type_id::create("req", this);
+      // req[3] = monitor_trans::type_id::create("req", this);
+      int tag_in;
+      int op;
+      int data_in;
+      int r1;
+      int d1;
+      int d2;
+      int data_out;
+      int resp;
+      int tag_out;
+      int state = 0;
 
-      @(negedge misc_intf.reset);
-      fork
-	 begin
-	    forever begin
-	       @(negedge misc_intf.clock);
-	       if(port_intf.op!=`NO_OP) begin
-		  tag_in = port_intf.tag_in;
-		  data[tag_in] = write_input(data[tag_in]);
-		  //item_collected_port.write(data[tag_in]);
-	       end // if (port_intf.op!=`NO_OP)
-	    end // forever begin
-	 end // fork begin
-	 begin
-	    forever begin
-	       @(negedge misc_intf.clock);
-	       if(port_intf.resp != 0) begin
-		  tag_out = port_intf.tag_out;
-		  data[tag_out] = write_output(data[tag_out]);
-		  item_collected_port.write(data[tag_out]);
-	       end
-	    end // forever begin
-	 end // fork branch
-      join
+      forever begin
+         @(negedge misc_intf.clock) begin
+            if (misc_intf.reset == 0) begin
+               if (state == 0) begin
+                  if (port_intf.op != 0) begin
+                     tag_in = port_intf.tag_in;
+                     op = port_intf.op;
+                     data_in = port_intf.data_in;
+                     r1 = port_intf.r1;
+                     d1 = port_intf.d1;
+                     d2 = port_intf.d2;
+                     state = 1;
+                  else
+                     state = 0;
+                  end // if (port_intf.op != 0)
+                  if (port_intf.resp != 0) begin
+                     req.resp = port_intf.resp;
+                     req.data_out = port_intf.data_out;
+                     req.tag_out = port_intf.tag_out;
+                     mon_analysis_port.write(req);
+                     req.resp = 0;
+                     req.data_out = 0;
+                     req.tag_out = 0;
+                  end // if (port_intf.resp != 0)
+               end // if (state == 0)
+               
+               else if (state == 1) begin
+                  if (req.op != 0) begin
+                     `uvm_fatal(get_type_name(), $sformatf("Tag: %d is being used before clearing.", tag_in));
+                  end // if (req[tag_in].op != 0)
+                  req.tag_in = tag_in;
+                  req.op = op;
+                  req.data_in = data_in;
+                  req.r1 = r1;
+                  req.d1 = d1;
+                  req.d2 = d2;
+                  req.resp = port_intf.resp;
+                  req.data_out = port_intf.data_out;
+                  req.tag_out = port_intf.tag_out;
+
+                  mon_analysis_port.write(req);
+                  // reset
+                  req.tag_in = 0;
+                  req.op = 0;
+                  req.data_in = 0;
+                  req.r1 = 0;
+                  req.d1 = 0;
+                  req.d2 = 0;
+                  req.resp = 0;
+                  req.data_out = 0;
+                  req.tag_out = 0;
+                  state = 0;
+
+               end // if (state == 1)
+
+            end // if (misc_intf.reset == 0)
+         end
+      end // forever
    endtask // run_phase
 endclass // port_monitor
 
