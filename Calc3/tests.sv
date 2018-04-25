@@ -77,10 +77,10 @@ class add_test extends base_test;
 			   foreach(sub_seq[i])begin
 			      seq[idx].num_items = 1;
 			      if(!seq[idx].randomize() with {seq[idx].cmd==sub_seq[i];
-							   seq[idx].dreg1==1;
-							   seq[idx].dreg2==2;
-							   seq[idx].rreg1==3;
-							   seq[idx].dat_in==1;
+							   //seq[idx].dreg1==1;
+							   //seq[idx].dreg2==2;
+							   //seq[idx].rreg1==3;
+							   //seq[idx].dat_in==1;
 							   })
 				`uvm_error(get_type_name(),"Sequenc randomize failed");
                               seq[idx].starting_phase = phase;

@@ -2,15 +2,15 @@ class mon_trans extends uvm_sequence_item;
 
    int port_id;
    int cmd_nResp;
-
+   bit g2g;
    bit [0:`INSTR_WIDTH-1] op;
    bit [0:`TAG_WIDTH-1]   tag_in, tag_out;
    bit [0:`REGISTER_WIDTH-1] d1, d2, r1;
    bit [0:`DATA_WIDTH-1]     data_in,data_out;
    bit [0:`RESP_WIDTH-1]     resp;
-
    bit 			     resp_came;
-
+   bit 			     latched;
+   
    `uvm_object_utils_begin(mon_trans)
      `uvm_field_int(port_id, UVM_ALL_ON)
      `uvm_field_int(cmd_nResp, UVM_ALL_ON)
@@ -24,11 +24,17 @@ class mon_trans extends uvm_sequence_item;
      `uvm_field_int(data_out, UVM_ALL_ON)
      `uvm_field_int(resp, UVM_ALL_ON)
      `uvm_field_int(resp_came, UVM_ALL_ON)
+     `uvm_field_int(g2g, UVM_ALL_ON)
    `uvm_object_utils_end
 
      function new(string name="");
 	super.new(name);
+	latched =0;
      endfunction
+
+   function void set_latched();
+      latched = 1;
+   endfunction // set_latched
    
    function string convert2string;
       string  sOp = "NO_OP";

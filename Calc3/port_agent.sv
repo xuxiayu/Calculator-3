@@ -2,6 +2,7 @@
 `include "drvr_trans.sv"
 `include "port_driver.sv"
 `include "port_monitor.sv"
+`include "hold_table.sv"
 
 class port_agent extends uvm_agent;
    `uvm_component_utils(port_agent)
