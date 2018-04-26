@@ -26,9 +26,9 @@ class base_sequence extends uvm_sequence#(drvr_trans);
    endtask // body
 endclass // my_sequence
 
-class add_sequence extends base_sequence;
+class b_sequence extends base_sequence;
    
-   `uvm_object_utils(add_sequence)
+   `uvm_object_utils(b_sequence)
     function new(string name="");
        super.new(name);
     endfunction // new
@@ -41,9 +41,9 @@ class add_sequence extends base_sequence;
 	 start_item(req);
 	 if(!req.randomize() with {
 				   req.op==cmd;
-			           req.d1== dreg1;
-				   req.d2== dreg2;
-				   req.r1== rreg1;
+			           req.d1==dreg1;
+				   req.d2==dreg2;
+				   req.r1==rreg1;
 				   req.data_in == dat_in;
 				   })
 	   `uvm_error(get_type_name(),"randomization failed");
@@ -53,3 +53,25 @@ class add_sequence extends base_sequence;
 	starting_phase.drop_objection(this);
    endtask // body
 endclass // my_sequence
+
+class sub_sequence extends uvm_sequence #(drvr_trans);
+   `uvm_object_utils(sub_sequence)
+
+   int num_items;   
+   
+   function new(string name="");
+      super.new(name);
+   endfunction // new
+
+   task body;
+      if (starting_phase != null)
+	starting_phase.raise_objection(this);
+
+      repeat(num_items) begin
+	 `uvm_do_with(req, {req.op == `SUB;});
+      end
+      
+      if(starting_phase != null)
+	starting_phase.drop_objection(this);
+   endtask: body
+endclass: sub_sequence
