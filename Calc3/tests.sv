@@ -196,3 +196,53 @@ class b0_test extends b_test;
       super.run_phase(phase);
    endtask // run_phase
 endclass // adder_test
+
+
+class AS_test extends base_test; 
+   `uvm_component_utils(AS_test)
+     function new(string name,uvm_component parent);
+	super.new(name,parent);
+	turn_on_ports(1,0,0,1);
+	sub_seq = {`ADD};	
+	randomize_sub_seq = 0;
+	if(!this.randomize())
+	  `uvm_error(get_type_name(),"Sequenc randomize failed");
+     endfunction // new
+   
+   virtual task run_phase(uvm_phase phase);     
+      b_sequence seq[4];
+      foreach(seq[i])begin
+	 seq[i] = b_sequence::type_id::create($sformatf("seq%0d",i),this);
+      end
+      fork 
+	 begin
+	    for(int index=0;index<4;index++)begin
+	       fork
+		  automatic int idx = index;
+		  begin
+		     if(onPort[idx] == 1)begin
+			repeat(25) begin
+			   foreach(sub_seq[i])begin
+			      if(randomize_sub_seq == 1)
+				sub_seq.shuffle();
+			      seq[idx].num_items = 1;
+			      if(!seq[idx].randomize() with {seq[idx].cmd==idx+2;
+							     seq[idx].dreg1 == 1;
+							     seq[idx].dreg2 == 2;
+							     seq[idx].rreg1 == 3; 
+							     seq[idx].dat_in==data_in;
+							     })
+				`uvm_error(get_type_name(),"Sequenc randomize failed");
+                              seq[idx].starting_phase = phase;
+                              seq[idx].start(env.agnts[idx].seqcr);
+                           end
+			end
+		     end
+                  end
+	       join_none;
+	    end // for (int index=0;index<4;index++)
+	    wait fork;
+	    end // fork begin
+      join
+   endtask // run_phase 
+endclass // base_test

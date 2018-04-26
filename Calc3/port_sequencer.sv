@@ -54,8 +54,8 @@ class b_sequence extends base_sequence;
    endtask // body
 endclass // my_sequence
 
-class sub_sequence extends uvm_sequence #(drvr_trans);
-   `uvm_object_utils(sub_sequence)
+class add_sequence extends uvm_sequence #(drvr_trans);
+   `uvm_object_utils(add_sequence)
 
    int num_items;   
    
@@ -68,10 +68,33 @@ class sub_sequence extends uvm_sequence #(drvr_trans);
 	starting_phase.raise_objection(this);
 
       repeat(num_items) begin
-	 `uvm_do_with(req, {req.op == `SUB;});
+	 `uvm_do_with(req, {req.op == `ADD;});
       end
       
       if(starting_phase != null)
 	starting_phase.drop_objection(this);
    endtask: body
-endclass: sub_sequence
+endclass
+
+class shift_sequence extends uvm_sequence #(drvr_trans);
+   `uvm_object_utils(shift_sequence)
+
+   int num_items;   
+   bit [0:3] d1;
+   
+   function new(string name="");
+      super.new(name);
+   endfunction // new
+
+   task body;
+      if (starting_phase != null)
+	starting_phase.raise_objection(this);
+
+      repeat(num_items) begin
+	 `uvm_do_with(req, {req.op == `SHL;});
+      end
+      
+      if(starting_phase != null)
+	starting_phase.drop_objection(this);
+   endtask: body
+endclass
