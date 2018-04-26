@@ -90,7 +90,7 @@ class calc_sb extends uvm_scoreboard;
          hold_table[A.port_id][A.tag_in][7] = A.d2;
          hold_table[A.port_id][A.tag_in][8] = A.r1;
          for (int i = 0; i < 4; i++) begin
-            if (A.r1 == hold_table[A.port_id][i][8] || A.d1 == hold_table[A.port_id][i][8] || A.d2 == hold_table[A.port_id][i][8]) begin
+            if (A.r1 == hold_table[A.port_id][i][8] || A.d1 == hold_table[A.port_id][i][8] || A.d2 == hold_table[A.port_id][i][8] || A.r1 == hold_table[A.port_id][i][6] || A.r1 == hold_table[A.port_id][i][7]) begin
                hold_table[A.port_id][A.tag_in][i] = hold_table[A.port_id][i][4];
             end // if (A.r1 == hold_table[A.port_id][i][8] || A.d1 == hold_table[A.port_id][i][8] || A.d2 == hold_table[A.port_id][i][8])
          end // for (int i = 0; i < 4; i++)
