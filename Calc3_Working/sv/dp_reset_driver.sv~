@@ -1,0 +1,23 @@
+class reset_driver extends uvm_driver;
+   `uvm_component_utils(reset_driver)
+     virtual misc_if misc_intf;
+
+   function new(string name, uvm_component parent);
+      super.new(name,parent);
+   endfunction // new
+
+  function void build_phase(uvm_phase phase);
+      super.build_phase(phase);
+      if (! uvm_config_db #(virtual misc_if)::get(this, "", "misc_if", misc_intf) )
+	`uvm_error(get_type_name(), "uvm_config_db::get misc_intf failed");
+   endfunction
+
+   task run_phase(uvm_phase phase);
+      super.run_phase(phase);
+      phase.raise_objection(this);
+      misc_intf.reset = 1'b1;
+      repeat(10)@(negedge misc_intf.clock);
+      misc_intf.reset = 1'b0;
+      phase.drop_objection(this);
+   endtask // run_phase
+endclass // reset_driver
